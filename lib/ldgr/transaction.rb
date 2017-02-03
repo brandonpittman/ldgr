@@ -12,7 +12,7 @@ module Ldgr
   #
   # Returns a transaction.
   class Transaction
-    attr_accessor :payee, :amount, :account, :equity, :date, :currency, :cleared
+    attr_accessor :payee, :amount, :account, :equity, :date, :effective, :currency, :cleared
 
     def initialize(&block)
       yield self if block_given?
@@ -24,6 +24,13 @@ module Ldgr
       #{account}  #{currency}#{amount}
       #{equity}
       HERE
+    end
+
+    def valid?
+      return false if String(payee).empty?
+      return false if String(amount).empty?
+      return false if String(account).empty?
+      true
     end
   end
 end

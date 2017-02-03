@@ -1,10 +1,11 @@
-require 'csv'
-require 'date'
-require 'highline/import'
-require 'optparse'
-require 'optparse/date'
-require 'pathname'
-require 'strscan'
+require 'csv'               # => true
+require 'date'              # => false
+require 'highline/import'   # => true
+require 'optparse'          # => false
+require 'optparse/date'     # => true
+require 'pathname'          # => false
+require 'strscan'           # => false
+require_relative 'version'  # ~> LoadError: cannot load such file -- /private/var/folders/q5/p4rpcgvx101ctdyg2xb6wtv40000gn/T/seeing_is_believing_temp_dir20170203-73398-1sbq1ev/version
 
 module Ldgr
   class Parser
@@ -133,5 +134,26 @@ module Ldgr
 
       open_file(ARGV[1])
     end
+
+    def self.setup
+      unless config_exist?
+        %w(transactions.dat accounts.dat budgets.dat aliases.dat commodities.dat setup.dat ledger.dat).each do |file|
+          puts "#{FILEBASE}#{file}"
+        end
+      end
+    end
+
+    def self.config_exist?
+      return false unless Pathname(FILEBASE).exist?
+      true
+    end
+
+    setup
   end
 end
+
+# ~> LoadError
+# ~> cannot load such file -- /private/var/folders/q5/p4rpcgvx101ctdyg2xb6wtv40000gn/T/seeing_is_believing_temp_dir20170203-73398-1sbq1ev/version
+# ~>
+# ~> /var/folders/q5/p4rpcgvx101ctdyg2xb6wtv40000gn/T/seeing_is_believing_temp_dir20170203-73398-1sbq1ev/program.rb:8:in `require_relative'
+# ~> /var/folders/q5/p4rpcgvx101ctdyg2xb6wtv40000gn/T/seeing_is_believing_temp_dir20170203-73398-1sbq1ev/program.rb:8:in `<main>'
