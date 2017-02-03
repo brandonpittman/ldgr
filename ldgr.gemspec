@@ -7,11 +7,11 @@ Gem::Specification.new do |spec|
   spec.name          = "ldgr"
   spec.version       = Ldgr::VERSION
   spec.authors       = ["Brandon Pittman"]
-  spec.email         = ["brandon@brandonpittman.net"]
+  spec.email         = ["ldgr@brandonpittman.net"]
 
-  spec.summary       = %q{TODO: Write a short summary, because Rubygems requires one.}
-  spec.description   = %q{TODO: Write a longer description or delete this line.}
-  spec.homepage      = "TODO: Put your gem's website or public repo URL here."
+  spec.summary       = %q{A command-line tool for managing Ledger transactions.}
+  spec.description   = %q{A command-line tool for managing Ledger transactions.}
+  spec.homepage      = "http://github.com/brandonpittman/ldgr"
   spec.license       = "MIT"
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
@@ -29,6 +29,14 @@ Gem::Specification.new do |spec|
   spec.bindir        = "exe"
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
+
+  spec.add_dependency "highline"
+  # spec.add_dependency "csv"
+  # spec.add_dependency "date"
+  # spec.add_dependency "optparse"
+  # spec.add_dependency "optparse/date"
+  # spec.add_dependency "pathname"
+  # spec.add_dependency "strscan"
 
   spec.add_development_dependency "bundler", "~> 1.14"
   spec.add_development_dependency "rake", "~> 10.0"
