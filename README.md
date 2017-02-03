@@ -49,6 +49,10 @@ transaction = Ldgr::Transaction.new do |t|
 end
 ~~~
 
+## TODO
+
+Currently, the Ledger file is a constant set to `~/.config/ledger/transactions.dat`. This should probably be customizable, possibly with a `.ldgrrc` in the future. Also, the default currency is Japanese Yen. You can change this the `--currency $` flag on the command line or setting it in the `Transaction.new` block. In the future, this should be set in an rc file.
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
