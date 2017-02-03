@@ -47,7 +47,8 @@ ldgr add --payee Brandon \
          --equity Cash \
          --date 2017-02-01 \
          --effective 2017-02-03 \
-         --cleared`
+         --cleared
+         --currency ¥
 ldgr clear
 ldgr sort
 ```
@@ -63,6 +64,7 @@ transaction = Ldgr::Transaction.new do |t|
     t.date = Date.today + 1
     t.effective = Date.today + 10
     t.cleared = true
+    t.currency = '¥'
 end
 ~~~
 
