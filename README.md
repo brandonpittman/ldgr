@@ -1,6 +1,21 @@
 # Ldgr
 
-Ldgr is a command-line tool for adding, sorting and tagging transactions in your Ledger file.
+Ldgr is a command-line tool for adding, sorting and tagging transactions in your Ledger file. It's rather opinionated in that it requires you to break down your Ledger file into multiple files.
+
+~~~
+~/.config/ledger/
+   -> ledger.dat
+   -> setup.dat
+   -> transactions.dat
+   -> accounts.dat
+   -> commodities.dat
+   -> budgets.dat
+   -> aliases.dat
+~~~
+
+ldgr can't handle all the text manipulation of transactions unless it can expect the text in the file to be just transaction data. This may be addressed in the future, but for now, please ahere to this file structure. I think you'll find it works well. You can use the **include** directive in Ledger files to add everything into the **ledger.dat** file.
+
+For maximum compatibility, `alias ledger="ledger --init-file ~/.config/ledger/ledgerrc"`, where the RC file contains frequently used command-line options.
 
 ## Installation
 
@@ -40,14 +55,16 @@ ldgr sort
 ~~~ruby
 transaction = Ldgr::Transaction.new do |t|
     t.payee = 'Brandon'
-    t.amount = 1000
+    t.amount = '1000'
     t.account = 'Something'
-    t.equity = 'Cash
-    t.date = Date.today + 1'
-    t.effective = Date.today + 10'
+    t.equity = 'Cash'
+    t.date = Date.today + 1
+    t.effective = Date.today + 10
     t.cleared = true
 end
 ~~~
+
+Ledger works with plain text files, so **yes**, the amount attribute should be a string.
 
 ## TODO
 

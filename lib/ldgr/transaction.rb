@@ -21,8 +21,8 @@ module Ldgr
     def to_s
       <<~HERE
       #{date} #{cleared}#{payee}
-      #{account}  #{currency}#{amount}
-      #{equity}
+        #{account}  #{currency}#{amount}
+        #{equity}
       HERE
     end
 
