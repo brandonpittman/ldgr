@@ -9,13 +9,13 @@ require 'fileutils'
 
 module Ldgr
   class Parser
-    DEFAULT_CURRENCY = '¥'
     FILEBASE = Dir.home + '/.config/ledger/'
     FILE = FILEBASE + 'transactions.dat'
-    VERSION = Ldgr::VERSION
+    VERSION = Ldgr::VERSION                                                                                                   # ~> NameError: uninitialized constant Ldgr::VERSION
     PROGRAM_NAME = 'ldgr'
     MATCH = /(?=(\n\d\d\d\d-\d\d-\d\d)(=\d\d\d\d-\d\d-\d\d)*)|\z/
     OTHER_MATCH = /(?=(\d\d\d\d-\d\d-\d\d)(=\d\d\d\d-\d\d-\d\d)*)/
+    DEFAULT_CURRENCY = Pathname(FILEBASE + '/default_currency').exist? ? Pathname(FILEBASE + '/default_currency').read.chomp : '$'
 
     def self.parse
       cli = OptionParser.new do |o|
