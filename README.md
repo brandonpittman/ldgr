@@ -47,7 +47,7 @@ ldgr add --payee Brandon \
          --equity Cash \
          --date 2017-02-01 \
          --effective 2017-02-03 \
-         --cleared
+         --cleared \
          --currency ¥
 ldgr clear
 ldgr sort
