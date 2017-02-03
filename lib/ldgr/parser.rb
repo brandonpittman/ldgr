@@ -11,7 +11,7 @@ module Ldgr
     DEFAULT_CURRENCY = '¥'
     FILEBASE = Dir.home + '/.config/ledger/'
     FILE = FILEBASE + 'transactions.dat'
-    VERSION = '0.4'.freeze
+    VERSION = Ldgr::VERSION
     PROGRAM_NAME = 'ldgr'
     MATCH = /(?=(\n\d\d\d\d-\d\d-\d\d)(=\d\d\d\d-\d\d-\d\d)*)|\z/
     OTHER_MATCH = /(?=(\d\d\d\d-\d\d-\d\d)(=\d\d\d\d-\d\d-\d\d)*)/
