@@ -40,7 +40,7 @@ Type `ldgr -h` at the command-line to see available commands and options.
 The CLI defaults the currency to **$**. You can set this yourself by adding a single currency character to `~/.config/ledger/default_currency`.
 
 ## CLI
-```sh
+```
 ldgr add --payee Brandon \
          --amount 1000 \
          --account Something \
@@ -51,6 +51,7 @@ ldgr add --payee Brandon \
          --currency ¥
 ldgr clear
 ldgr sort
+ldgr tag
 ```
 
 ## Library
