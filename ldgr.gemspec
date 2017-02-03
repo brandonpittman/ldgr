@@ -31,14 +31,10 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "highline"
-  # spec.add_dependency "csv"
-  # spec.add_dependency "date"
-  # spec.add_dependency "optparse"
-  # spec.add_dependency "optparse/date"
-  # spec.add_dependency "pathname"
-  # spec.add_dependency "strscan"
 
   spec.add_development_dependency "bundler", "~> 1.14"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "minitest", "~> 5.0"
+
+  spec.executables << 'ldgr'
 end
