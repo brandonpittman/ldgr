@@ -1,8 +1,6 @@
 # Ldgr
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/ldgr`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+Ldgr is a command-line tool for adding, sorting and tagging transactions in your Ledger file.
 
 ## Installation
 
@@ -22,7 +20,34 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Type `ldgr -h` at the command-line to see available commands and options.
+
+## CLI
+```sh
+ldgr add --payee Brandon \
+         --amount 1000 \
+         --account Something \
+         --equity Cash \
+         --date 2017-02-01 \
+         --effective 2017-02-03 \
+         --cleared`
+ldgr clear
+ldgr sort
+```
+
+## Library
+
+~~~ruby
+transaction = Ldgr::Transaction.new do |t|
+    t.payee = 'Brandon'
+    t.amount = 1000
+    t.account = 'Something'
+    t.equity = 'Cash
+    t.date = Date.today + 1'
+    t.effective = Date.today + 10'
+    t.cleared = true
+end
+~~~
 
 ## Development
 
@@ -32,7 +57,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/Brandon Pittman/ldgr. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/brandonpittman/ldgr. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
 
 ## License
