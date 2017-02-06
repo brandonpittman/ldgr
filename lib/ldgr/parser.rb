@@ -6,6 +6,7 @@ require 'optparse/date'
 require 'pathname'
 require 'strscan'
 require 'fileutils'
+require 'yaml'
 
 module Ldgr
   class Parser
@@ -15,8 +16,9 @@ module Ldgr
     PROGRAM_NAME = 'ldgr'
     MATCH = /(?=(\n\d\d\d\d-\d\d-\d\d)(=\d\d\d\d-\d\d-\d\d)*)|\z/
     OTHER_MATCH = /(?=(\d\d\d\d-\d\d-\d\d)(=\d\d\d\d-\d\d-\d\d)*)/
-    DEFAULT_CURRENCY = Pathname(FILEBASE + '/default_currency').exist? ? Pathname(FILEBASE + '/default_currency').read.chomp : '$'
     COMMANDS = %w(add sort tag clear open)
+    SETUP_FILES = %w(transactions.dat accounts.dat budgets.dat aliases.dat commodities.dat setup.dat ledger.dat ldgr.yaml)
+    CONFIG_FILE = Pathname(FILEBASE + 'ldgr.yaml')
 
     def self.parse
       cli = OptionParser.new do |o|
@@ -51,8 +53,8 @@ module Ldgr
         t.payee    = config.fetch(:payee) { |key| error_policy.call(key) }
         t.account  = config.fetch(:account) { |key| error_policy.call(key) }
         t.amount   = config.fetch(:amount) { |key| error_policy.call(key) }
-        t.currency = config.fetch(:currency) { DEFAULT_CURRENCY }
-        t.equity   = config.fetch(:equity) { "Cash" }
+        t.currency = config.fetch(:currency) { defaults.fetch('currency') { '$' } }
+        t.equity   = config.fetch(:equity) { defaults.fetch('equity') { 'Cash' } }
         t.cleared  = config[:cleared] ? '* ' : ''
         t.date     = date == effective ? date : date << '=' << effective
       end
@@ -136,17 +138,24 @@ module Ldgr
       open_file(ARGV[1])
     end
 
+    def self.defaults
+      defaults_hash = {}
+      defaults_hash.merge(YAML.load_file(CONFIG_FILE).to_h)
+    end
+
     def self.setup
       unless config_exist?
         FileUtils.mkdir_p(FILEBASE)
-        %w(transactions.dat accounts.dat budgets.dat aliases.dat commodities.dat setup.dat ledger.dat).each do |file|
+        SETUP_FILES.each do |file|
           FileUtils.touch("#{FILEBASE}#{file}")
         end
       end
     end
 
     def self.config_exist?
-      return false unless Pathname(FILEBASE).exist?
+     SETUP_FILES.each do |file|
+        return false unless Pathname("#{FILEBASE}#{file}").exist?
+      end
       true
     end
 

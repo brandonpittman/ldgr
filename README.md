@@ -33,11 +33,10 @@ Or install it yourself as:
 
     $ gem install ldgr
 
-## Usage
+## Customization
 
-Type `ldgr -h` at the command-line to see available commands and options.
-
-The CLI defaults the currency to **$**. You can set this yourself by adding a single currency character to `~/.config/ledger/default_currency`.
+- The CLI defaults the currency to **$**. You can set a new default yourself by adding `currency: someCurrencyCharacter` to `~/.config/ledger/ldgr.yaml`.
+- The CLI defaults the equity to **Cash** You can set a new default yourself by adding `equity: someEquityAccount` to `~/.config/ledger/ldgr.yaml`.
 
 ## CLI
 ```
