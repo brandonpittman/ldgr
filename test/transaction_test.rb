@@ -43,5 +43,6 @@ describe Ldgr::Transaction do
     assert_equal yen, transaction.currency
     transaction.currency = dollar
     assert_equal dollar, transaction.currency
+    assert transaction.valid?
   end
 end

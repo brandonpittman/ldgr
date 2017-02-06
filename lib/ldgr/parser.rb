@@ -138,8 +138,8 @@ module Ldgr
       open_file(ARGV[1])
     end
 
-    def self.defaults
-      YAML.load_file(CONFIG_FILE).to_h
+    def self.defaults(config_file=CONFIG_FILE)
+      YAML.load_file(config_file).to_h
     end
 
     def self.setup
@@ -151,8 +151,8 @@ module Ldgr
       end
     end
 
-    def self.config_exist?
-     SETUP_FILES.each do |file|
+    def self.config_exist?(setup_files=SETUP_FILES)
+     setup_files.each do |file|
         return false unless Pathname("#{FILEBASE}#{file}").exist?
       end
       true
