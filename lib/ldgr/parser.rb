@@ -139,8 +139,7 @@ module Ldgr
     end
 
     def self.defaults
-      defaults_hash = {}
-      defaults_hash.merge(YAML.load_file(CONFIG_FILE).to_h)
+      YAML.load_file(CONFIG_FILE).to_h
     end
 
     def self.setup
