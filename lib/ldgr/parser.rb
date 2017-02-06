@@ -11,11 +11,12 @@ module Ldgr
   class Parser
     FILEBASE = Dir.home + '/.config/ledger/'
     FILE = FILEBASE + 'transactions.dat'
-    VERSION = Ldgr::VERSION                                                                                                   # ~> NameError: uninitialized constant Ldgr::VERSION
+    VERSION = Ldgr::VERSION
     PROGRAM_NAME = 'ldgr'
     MATCH = /(?=(\n\d\d\d\d-\d\d-\d\d)(=\d\d\d\d-\d\d-\d\d)*)|\z/
     OTHER_MATCH = /(?=(\d\d\d\d-\d\d-\d\d)(=\d\d\d\d-\d\d-\d\d)*)/
     DEFAULT_CURRENCY = Pathname(FILEBASE + '/default_currency').exist? ? Pathname(FILEBASE + '/default_currency').read.chomp : '$'
+    COMMANDS = %w(add sort tag clear open)
 
     def self.parse
       cli = OptionParser.new do |o|
@@ -35,9 +36,9 @@ module Ldgr
       end
 
       config = {}
-      command = String(cli.parse(ARGV, into: config)[0]).to_sym
+      command = String(cli.parse(ARGV, into: config)[0])
 
-      send(command, config) if methods.include? command
+      send(command, config) if COMMANDS.include? command
     end
 
     def self.add(config)
