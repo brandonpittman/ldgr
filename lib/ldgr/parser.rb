@@ -138,6 +138,7 @@ module Ldgr
 
     def self.setup
       unless config_exist?
+        FileUtils.mkdir_p(FILEBASE)
         %w(transactions.dat accounts.dat budgets.dat aliases.dat commodities.dat setup.dat ledger.dat).each do |file|
           FileUtils.touch("#{FILEBASE}#{file}")
         end
