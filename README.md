@@ -35,8 +35,16 @@ Or install it yourself as:
 
 ## Customization
 
-- The CLI defaults the currency to **$**. You can set a new default yourself by adding `currency: someCurrencyCharacter` to `~/.config/ledger/ldgr.yaml`.
-- The CLI defaults the equity to **Cash** You can set a new default yourself by adding `equity: someEquityAccount` to `~/.config/ledger/ldgr.yaml`.
+- The CLI defaults the currency to **$**. 
+- The CLI defaults the equity to **Cash**.
+
+~~~yaml
+---
+:currency: ¥
+:equity: My Sweet Cash Pile
+~~~
+
+**Use symbols in YAML file.
 
 ## CLI
 ```

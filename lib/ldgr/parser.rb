@@ -1,3 +1,4 @@
+require 'irb'
 require 'csv'
 require 'date'
 require 'highline/import'
@@ -19,6 +20,7 @@ module Ldgr
     COMMANDS = %w(add sort tag clear open)
     SETUP_FILES = %w(transactions.dat accounts.dat budgets.dat aliases.dat commodities.dat setup.dat ledger.dat ldgr.yaml)
     CONFIG_FILE = Pathname(FILEBASE + 'ldgr.yaml')
+    LDGR_DEFAULTS = { currency: '$', equity: 'Cash' }.to_h
 
     def self.parse
       cli = OptionParser.new do |o|
@@ -37,9 +39,9 @@ module Ldgr
         o.define '-p', '--payee=PAYEE', String, 'the payee of the transaction'
       end
 
-      config = {}
+      config = defaults
       command = String(cli.parse(ARGV, into: config)[0])
-
+      binding.irb
       send(command, config) if COMMANDS.include? command
     end
 
@@ -139,7 +141,7 @@ module Ldgr
     end
 
     def self.defaults(config_file=CONFIG_FILE)
-      YAML.load_file(config_file).to_h
+      LDGR_DEFAULTS.merge(YAML.load_file(config_file).to_h)
     end
 
     def self.setup
