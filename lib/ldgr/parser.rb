@@ -10,6 +10,15 @@ require 'fileutils'
 require 'yaml'
 
 module Ldgr
+  # Parses configuration options.
+  #
+  #
+  # Examples
+  #
+  #   Ldgr::Parser.parse
+  #   # => some file action
+  #
+  # Returns nothing on success.
   class Parser
     FILEBASE = Dir.home + '/.config/ledger/'
     FILE = FILEBASE + 'transactions.dat'
@@ -20,7 +29,7 @@ module Ldgr
     COMMANDS = %w(add sort tag clear open)
     SETUP_FILES = %w(transactions.dat accounts.dat budgets.dat aliases.dat commodities.dat setup.dat ledger.dat ldgr.yaml)
     CONFIG_FILE = Pathname(FILEBASE + 'ldgr.yaml')
-    LDGR_DEFAULTS = { currency: '$', equity: 'Cash' }.to_h
+    LDGR_DEFAULTS = { currency: '$', equity: 'Cash', effective: Date.today, date: Date.today, cleared: false }.to_h
 
     def self.parse
       cli = OptionParser.new do |o|
@@ -41,7 +50,6 @@ module Ldgr
 
       config = defaults
       command = String(cli.parse(ARGV, into: config)[0])
-      binding.irb
       send(command, config) if COMMANDS.include? command
     end
 
@@ -49,14 +57,14 @@ module Ldgr
       error_policy = ->(key) { fail "You need to provide a value for #{key.to_s}." }
 
       transaction = Transaction.new do |t|
-        date = String(config.fetch(:date) { Date.today } )
-        effective = String(config.fetch(:effective) { Date.today })
+        date = String(config.fetch(:date) { |key| error_policy.call(key) })
+        effective = String(config.fetch(:effective) { |key| error_policy.call(key) })
 
         t.payee    = config.fetch(:payee) { |key| error_policy.call(key) }
         t.account  = config.fetch(:account) { |key| error_policy.call(key) }
         t.amount   = config.fetch(:amount) { |key| error_policy.call(key) }
-        t.currency = config.fetch(:currency) { defaults.fetch('currency') { '$' } }
-        t.equity   = config.fetch(:equity) { defaults.fetch('equity') { 'Cash' } }
+        t.currency = config.fetch(:currency) { config.fetch(:currency) }
+        t.equity   = config.fetch(:equity) { config.fetch(:equity) }
         t.cleared  = config[:cleared] ? '* ' : ''
         t.date     = date == effective ? date : date << '=' << effective
       end
@@ -144,10 +152,10 @@ module Ldgr
       LDGR_DEFAULTS.merge(YAML.load_file(config_file).to_h)
     end
 
-    def self.setup
+    def self.setup(setup_files=SETUP_FILES)
       unless config_exist?
         FileUtils.mkdir_p(FILEBASE)
-        SETUP_FILES.each do |file|
+        setup_files.each do |file|
           FileUtils.touch("#{FILEBASE}#{file}")
         end
       end
