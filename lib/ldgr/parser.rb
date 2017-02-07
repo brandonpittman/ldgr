@@ -31,7 +31,7 @@ module Ldgr
     CONFIG_FILE = Pathname(FILEBASE + 'ldgr.yaml')
     LDGR_DEFAULTS = { currency: '$', equity: 'Cash', effective: Date.today, date: Date.today, cleared: false }.to_h
 
-    def self.parse
+    def self.parse(transactions_file=FILE)
       cli = OptionParser.new do |o|
         o.banner = "Usage #{PROGRAM_NAME} [add|sort|tag|clear|open]"
         o.program_name = PROGRAM_NAME
@@ -50,10 +50,10 @@ module Ldgr
 
       config = defaults
       command = String(cli.parse(ARGV, into: config)[0])
-      send(command, config) if COMMANDS.include? command
+      send(command, config, transactions_file) if COMMANDS.include? command
     end
 
-    def self.add(config)
+    def self.add(config, transactions_file=FILE)
       error_policy = ->(key) { fail "You need to provide a value for #{key.to_s}." }
 
       transaction = Transaction.new do |t|
@@ -69,15 +69,15 @@ module Ldgr
         t.date     = date == effective ? date : date << '=' << effective
       end
 
-      File.open(FILE, 'a') { |file| file.puts transaction }
+      File.open(transactions_file, 'a') { |file| file.puts transaction }
     end
 
-    def self.clear(config)
+    def self.clear(config, transactions_file=FILE)
       output = ''
       pattern = /((^\d{,4}-\d{,2}-\d{,2})(=\d{,4}-\d{,2}-\d{,2})?) ([^\*]+)/
       count = 0
 
-      File.open(FILE, 'r') do |transactions|
+      File.open(transactions_file, 'r') do |transactions|
         transactions.each_line do |transaction|
           match = pattern.match(transaction)
           if match && match[3]
@@ -98,16 +98,16 @@ module Ldgr
           output << transaction
         end
       end
-      IO.write(FILE, output)
+      IO.write(transactions_file, output)
     end
 
-    def self.tag(config)
+    def self.tag(config, transactions_file=FILE)
       output = ''
       pattern = /(^\s+Expenses[^:])\s*(¥.+)/
       count = 0
       previous = ''
 
-      File.open(FILE, 'r') do |transactions|
+      File.open(transactions_file, 'r') do |transactions|
         transactions.each_line do |transaction|
           match = pattern.match(transaction)
           if match
@@ -120,11 +120,11 @@ module Ldgr
           output << transaction
         end
       end
-      IO.write(FILE, output)
+      IO.write(transactions_file, output)
     end
 
-    def self.sort(config)
-      text = File.read(FILE).gsub(/\n+|\r+/, "\n").squeeze("\n").strip
+    def self.sort(config, transactions_file=FILE)
+      text = File.read(transactions_file).gsub(/\n+|\r+/, "\n").squeeze("\n").strip
       scanner = StringScanner.new(text)
       results = []
 
@@ -133,7 +133,7 @@ module Ldgr
         scanner.skip_until(OTHER_MATCH)
       end
 
-      File.open(FILE, 'w') do |file|
+      File.open(transactions_file, 'w') do |file|
         file.puts results.sort
       end
     end
