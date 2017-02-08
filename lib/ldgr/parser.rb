@@ -28,24 +28,63 @@ module Ldgr
 
     attr_accessor :transactions_file, :config
 
+    # Public: Creates a new Parser object
+    #
+    # config  - A hash of config options
+    #
+    # Examples
+    #
+    #   new(config: {currency: '¥'})
+    #   # => <ParserObject>
+    #
+    # Returns a Parser object.
     def initialize(config: {})
       @transactions_file = defaults.fetch(:transactions_file)
       @config = defaults.merge(user_config).merge(config)
     end
 
+    # Public: User-specified config options
+    #
+    # Examples
+    #
+    #   user_config
+    #   # => {all the config options from the user's YAML file}
+    #
+    # Returns a hash of user-specified config options.
     def user_config
       path = Pathname(FILEBASE + 'ldgr.yaml')
       YAML.load_file(path).to_h
     end
 
+    # Public: available commands
+    #
+    # Examples
+    #
+    #   commands
+    #
+    # Returns an array of command names.
     def commands
       %w(add sort tag clear open)
     end
 
+    # Public: expected setup files
+    #
+    # Examples
+    #
+    #   setup_files
+    #
+    # Returns an array of file names.
     def self.setup_files
       %w(transactions.dat accounts.dat budgets.dat aliases.dat commodities.dat setup.dat ledger.dat ldgr.yaml)
     end
 
+    # Public: Kicks off the CLI
+    #
+    # Examples
+    #
+    #   parse
+    #
+    # Returns nothing.
     def parse
       cli = OptionParser.new do |o|
         o.banner = "Usage #{PROGRAM_NAME} [add|sort|tag|clear|open]"
@@ -67,6 +106,13 @@ module Ldgr
       send(command) if commands.include? command
     end
 
+    # Public: Adds a transaction to the transactions_file.
+    #
+    # Examples
+    #
+    #   add
+    #
+    # Returns nothing.
     def add
       error_policy = ->(key) { fail "You need to provide a value for #{key.to_s}." }
 
@@ -86,6 +132,14 @@ module Ldgr
       File.open(transactions_file, 'a') { |file| file.puts transaction }
     end
 
+    # Public: Runs through all uncleared transactions that are passed
+    # their effective date and offers to clear them.
+    #
+    # Examples
+    #
+    #   clear
+    #
+    # Returns nothing.
     def clear
       output = ''
       pattern = /((^\d{,4}-\d{,2}-\d{,2})(=\d{,4}-\d{,2}-\d{,2})?) ([^\*]+)/
@@ -115,6 +169,13 @@ module Ldgr
       IO.write(transactions_file, output)
     end
 
+    # Public: Runs through all transactions with only Expenses set as the account and lets you enter an account name.
+    #
+    # Examples
+    #
+    #   tag
+    #
+    # Returns nothing.
     def tag
       output = ''
       pattern = /(^\s+Expenses[^:])\s*(¥.+)/
@@ -137,6 +198,13 @@ module Ldgr
       IO.write(transactions_file, output)
     end
 
+    # Public: Sorts all transactions by date.
+    #
+    # Examples
+    #
+    #   sort
+    #
+    # Returns nothing.
     def sort
       text = File.read(transactions_file).gsub(/\n+|\r+/, "\n").squeeze("\n").strip
       scanner = StringScanner.new(text)
@@ -152,6 +220,14 @@ module Ldgr
       end
     end
 
+    # Public: Opens a settings file from ~/.config/ledger
+    #
+    # Examples
+    #
+    #   open accounts
+    #   # => accounts file opens in $EDITOR
+    #
+    # Returns nothing.
     def open
       def open_file(file_to_open)
         checked_file = "#{FILEBASE}#{file_to_open}.dat"
@@ -162,6 +238,14 @@ module Ldgr
       open_file(ARGV[1])
     end
 
+    # Public: ldgr's default configuration options
+    #
+    # Examples
+    #
+    #   defaults
+    #   # => {all the configuration options}
+    #
+    # Returns a hash of default configuration options.
     def defaults
       {
         currency: '$',
@@ -173,6 +257,9 @@ module Ldgr
       }
     end
 
+    # Private: Prepares users' file system for ldgr.
+    #
+    # Returns nothing.
     def self.setup
       unless config_exist?
         FileUtils.mkdir_p(FILEBASE)
@@ -182,6 +269,9 @@ module Ldgr
       end
     end
 
+    # Private: Checks if user already has setup files created.
+    #
+    # Returns nothing.
     def self.config_exist?
      setup_files.each do |file|
         return false unless Pathname("#{FILEBASE}#{file}").exist?
