@@ -2,4 +2,5 @@
 
 require 'ldgr'
 
-Ldgr::Parser.parse
+parser = Ldgr::Parser.new
+parser.parse

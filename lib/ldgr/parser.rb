@@ -21,17 +21,32 @@ module Ldgr
   # Returns nothing on success.
   class Parser
     FILEBASE = Dir.home + '/.config/ledger/'
-    FILE = FILEBASE + 'transactions.dat'
     VERSION = Ldgr::VERSION
     PROGRAM_NAME = 'ldgr'
     MATCH = /(?=(\n\d\d\d\d-\d\d-\d\d)(=\d\d\d\d-\d\d-\d\d)*)|\z/
     OTHER_MATCH = /(?=(\d\d\d\d-\d\d-\d\d)(=\d\d\d\d-\d\d-\d\d)*)/
-    COMMANDS = %w(add sort tag clear open)
-    SETUP_FILES = %w(transactions.dat accounts.dat budgets.dat aliases.dat commodities.dat setup.dat ledger.dat ldgr.yaml)
-    CONFIG_FILE = Pathname(FILEBASE + 'ldgr.yaml')
-    LDGR_DEFAULTS = { currency: '$', equity: 'Cash', effective: Date.today, date: Date.today, cleared: false }.to_h
 
-    def self.parse(transactions_file=FILE)
+    attr_accessor :transactions_file, :config
+
+    def initialize(config: {})
+      @transactions_file = defaults.fetch(:transactions_file)
+      @config = defaults.merge(user_config).merge(config)
+    end
+
+    def user_config
+      path = Pathname(FILEBASE + 'ldgr.yaml')
+      YAML.load_file(path).to_h
+    end
+
+    def commands
+      %w(add sort tag clear open)
+    end
+
+    def self.setup_files
+      %w(transactions.dat accounts.dat budgets.dat aliases.dat commodities.dat setup.dat ledger.dat ldgr.yaml)
+    end
+
+    def parse
       cli = OptionParser.new do |o|
         o.banner = "Usage #{PROGRAM_NAME} [add|sort|tag|clear|open]"
         o.program_name = PROGRAM_NAME
@@ -48,12 +63,11 @@ module Ldgr
         o.define '-p', '--payee=PAYEE', String, 'the payee of the transaction'
       end
 
-      config = defaults
       command = String(cli.parse(ARGV, into: config)[0])
-      send(command, config, transactions_file) if COMMANDS.include? command
+      send(command) if commands.include? command
     end
 
-    def self.add(config, transactions_file=FILE)
+    def add
       error_policy = ->(key) { fail "You need to provide a value for #{key.to_s}." }
 
       transaction = Transaction.new do |t|
@@ -72,7 +86,7 @@ module Ldgr
       File.open(transactions_file, 'a') { |file| file.puts transaction }
     end
 
-    def self.clear(config, transactions_file=FILE)
+    def clear
       output = ''
       pattern = /((^\d{,4}-\d{,2}-\d{,2})(=\d{,4}-\d{,2}-\d{,2})?) ([^\*]+)/
       count = 0
@@ -101,7 +115,7 @@ module Ldgr
       IO.write(transactions_file, output)
     end
 
-    def self.tag(config, transactions_file=FILE)
+    def tag
       output = ''
       pattern = /(^\s+Expenses[^:])\s*(¥.+)/
       count = 0
@@ -123,7 +137,7 @@ module Ldgr
       IO.write(transactions_file, output)
     end
 
-    def self.sort(config, transactions_file=FILE)
+    def sort
       text = File.read(transactions_file).gsub(/\n+|\r+/, "\n").squeeze("\n").strip
       scanner = StringScanner.new(text)
       results = []
@@ -138,8 +152,8 @@ module Ldgr
       end
     end
 
-    def self.open(_)
-      def self.open_file(file_to_open)
+    def open
+      def open_file(file_to_open)
         checked_file = "#{FILEBASE}#{file_to_open}.dat"
         raise "#{checked_file} doesn't exist." unless Pathname(checked_file).exist?
         system(ENV['EDITOR'], checked_file)
@@ -148,11 +162,18 @@ module Ldgr
       open_file(ARGV[1])
     end
 
-    def self.defaults(config_file=CONFIG_FILE)
-      LDGR_DEFAULTS.merge(YAML.load_file(config_file).to_h)
+    def defaults
+      {
+        currency: '$',
+        equity: 'Cash',
+        effective: Date.today,
+        date: Date.today,
+        cleared: false,
+        transactions_file: FILEBASE + 'transactions.dat'
+      }
     end
 
-    def self.setup(setup_files=SETUP_FILES)
+    def self.setup
       unless config_exist?
         FileUtils.mkdir_p(FILEBASE)
         setup_files.each do |file|
@@ -161,7 +182,7 @@ module Ldgr
       end
     end
 
-    def self.config_exist?(setup_files=SETUP_FILES)
+    def self.config_exist?
      setup_files.each do |file|
         return false unless Pathname("#{FILEBASE}#{file}").exist?
       end
