@@ -1,0 +1,7 @@
+Tests:
+	- it can sort transactions
+	- it can clear transactions
+	- it can tag transactions
+	- it can output version
+	- it can output help
+	- it can open setup files
