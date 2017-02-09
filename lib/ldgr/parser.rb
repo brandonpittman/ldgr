@@ -25,6 +25,8 @@ module Ldgr
     PROGRAM_NAME = 'ldgr'
     MATCH = /(?=(\n\d\d\d\d-\d\d-\d\d)(=\d\d\d\d-\d\d-\d\d)*)|\z/
     OTHER_MATCH = /(?=(\d\d\d\d-\d\d-\d\d)(=\d\d\d\d-\d\d-\d\d)*)/
+    COMMANDS = %w(add sort tag clear open)
+    SETUP_FILES = %w(transactions.dat accounts.dat budgets.dat aliases.dat commodities.dat setup.dat ledger.dat ldgr.yaml)
 
     attr_accessor :transactions_file, :config
 
@@ -56,28 +58,6 @@ module Ldgr
       YAML.load_file(path).to_h
     end
 
-    # Public: available commands
-    #
-    # Examples
-    #
-    #   commands
-    #
-    # Returns an array of command names.
-    def commands
-      %w(add sort tag clear open)
-    end
-
-    # Public: expected setup files
-    #
-    # Examples
-    #
-    #   setup_files
-    #
-    # Returns an array of file names.
-    def self.setup_files
-      %w(transactions.dat accounts.dat budgets.dat aliases.dat commodities.dat setup.dat ledger.dat ldgr.yaml)
-    end
-
     # Public: Kicks off the CLI
     #
     # Examples
@@ -103,7 +83,7 @@ module Ldgr
       end
 
       command = String(cli.parse(ARGV, into: config)[0])
-      send(command) if commands.include? command
+      send(command) if COMMANDS.include? command
     end
 
     # Public: Adds a transaction to the transactions_file.
@@ -238,6 +218,8 @@ module Ldgr
       open_file(ARGV[1])
     end
 
+    private :open
+
     # Public: ldgr's default configuration options
     #
     # Examples
@@ -257,10 +239,10 @@ module Ldgr
       }
     end
 
-    # Private: Prepares users' file system for ldgr.
+    # Public: Prepares users' file system for ldgr.
     #
     # Returns nothing.
-    def self.setup
+    def self.setup(setup_files=SETUP_FILES)
       unless config_exist?
         FileUtils.mkdir_p(FILEBASE)
         setup_files.each do |file|
@@ -269,10 +251,10 @@ module Ldgr
       end
     end
 
-    # Private: Checks if user already has setup files created.
+    # Public: Checks if user already has setup files created.
     #
     # Returns nothing.
-    def self.config_exist?
+    def self.config_exist?(setup_files=SETUP_FILES)
      setup_files.each do |file|
         return false unless Pathname("#{FILEBASE}#{file}").exist?
       end
