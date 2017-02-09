@@ -26,7 +26,6 @@ module Ldgr
     MATCH = /(?=(\n\d\d\d\d-\d\d-\d\d)(=\d\d\d\d-\d\d-\d\d)*)|\z/
     OTHER_MATCH = /(?=(\d\d\d\d-\d\d-\d\d)(=\d\d\d\d-\d\d-\d\d)*)/
     COMMANDS = %w(add sort tag clear open)
-    SETUP_FILES = %w(transactions.dat accounts.dat budgets.dat aliases.dat commodities.dat setup.dat ledger.dat ldgr.yaml)
 
     attr_accessor :transactions_file, :config
 
@@ -55,7 +54,7 @@ module Ldgr
     # Returns a hash of user-specified config options.
     def user_config
       path = Pathname(FILEBASE + 'ldgr.yaml')
-      YAML.load_file(path).to_h
+      path.exist? ? YAML.load_file(path).to_h : {}
     end
 
     # Public: Kicks off the CLI
@@ -66,6 +65,8 @@ module Ldgr
     #
     # Returns nothing.
     def parse
+      setup
+
       cli = OptionParser.new do |o|
         o.banner = "Usage #{PROGRAM_NAME} [add|sort|tag|clear|open]"
         o.program_name = PROGRAM_NAME
@@ -239,28 +240,16 @@ module Ldgr
       }
     end
 
-    # Public: Prepares users' file system for ldgr.
+    # Private: Prepares users' file system for ldgr.
     #
     # Returns nothing.
-    def self.setup(setup_files=SETUP_FILES)
-      unless config_exist?
-        FileUtils.mkdir_p(FILEBASE)
-        setup_files.each do |file|
-          FileUtils.touch("#{FILEBASE}#{file}")
-        end
+    def setup
+      setup_files = %w(transactions.dat accounts.dat budgets.dat aliases.dat commodities.dat setup.dat ledger.dat ldgr.yaml)
+      FileUtils.mkdir_p(FILEBASE)
+      setup_files.each do |file|
+        FileUtils.touch("#{FILEBASE}#{file}")
       end
     end
-
-    # Public: Checks if user already has setup files created.
-    #
-    # Returns nothing.
-    def self.config_exist?(setup_files=SETUP_FILES)
-     setup_files.each do |file|
-        return false unless Pathname("#{FILEBASE}#{file}").exist?
-      end
-      true
-    end
-
-    setup
+    private :setup
   end
 end
