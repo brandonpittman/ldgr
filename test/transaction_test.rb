@@ -18,18 +18,6 @@ describe Ldgr::Transaction do
     end
   end
 
-  it 'takes a payee' do
-    assert_equal 'Brandon', transaction.payee
-  end
-
-  it 'takes an account' do
-    assert_equal 'Entertainment', transaction.account
-  end
-
-  it 'takes an amount' do
-    assert_equal '1000', transaction.amount
-  end
-
   it 'validates transactions' do
     assert transaction.valid?
 

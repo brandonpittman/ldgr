@@ -7,8 +7,6 @@ require 'irb'
 describe Ldgr::Parser do
   let(:parser) { Ldgr::Parser.new }
   let(:yaml) { { currency: '$' } }
-  let(:ldgr_defaults) { parser.defaults }
-  let(:merged_defaults) { ldgr_defaults.merge(yaml) }
   let(:today) { Date.today }
   let(:non_defaults) do
     { payee: 'OXO', account: 'Alcohol', amount: '2000', currency: '¥' }
@@ -21,14 +19,8 @@ describe Ldgr::Parser do
     HERE
   end
 
-  it 'can read config files' do
-    config_file = Tempfile.new('ldgr.yaml')
-    config_file.write(ldgr_defaults.merge(yaml).to_yaml)
-    config_file.rewind
-    expect(YAML.load_file(config_file).fetch(:currency)).must_equal '$'
-  end
 
-  it 'can write a transaction to a transactions file' do
+  it 'can add a transaction' do
     transactions_file = Tempfile.new('transactions.dat')
     parser = Ldgr::Parser.new(config: non_defaults)
     parser.transactions_file = transactions_file
@@ -43,23 +35,23 @@ describe Ldgr::Parser do
     parser.transactions_file = transactions_file
     add_call = proc { parser.add }
     expect(add_call).must_raise(RuntimeError)
-  end
-
-  it 'requires amount on add' do
-    transactions_file = Tempfile.new('transactions.dat')
-    parser = Ldgr::Parser.new(config: non_defaults)
     parser.config.delete(:amount)
-    parser.transactions_file = transactions_file
+    add_call = proc { parser.add }
+    expect(add_call).must_raise(RuntimeError)
+    parser.config.delete(:payee)
     add_call = proc { parser.add }
     expect(add_call).must_raise(RuntimeError)
   end
 
-  it 'requires payee on add' do
-    transactions_file = Tempfile.new('transactions.dat')
-    parser = Ldgr::Parser.new(config: non_defaults)
-    parser.config.delete(:payee)
-    parser.transactions_file = transactions_file
-    add_call = proc { parser.add }
-    expect(add_call).must_raise(RuntimeError)
+  it 'sorts transactions' do
+    skip 'not yet implemented'
+  end
+
+  it 'tags untagged transactions' do
+    skip 'not yet implemented'
+  end
+
+  it 'clears uncleared transactions' do
+    skip 'not yet implemented'
   end
 end

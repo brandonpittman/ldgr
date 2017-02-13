@@ -45,19 +45,6 @@ module Ldgr
       @config = defaults.merge(user_config).merge(config)
     end
 
-    # Public: User-specified config options
-    #
-    # Examples
-    #
-    #   user_config
-    #   # => {all the config options from the user's YAML file}
-    #
-    # Returns a hash of user-specified config options.
-    def user_config
-      path = Pathname(FILEBASE + 'ldgr.yaml')
-      path.exist? ? YAML.load_file(path).to_h : {}
-    end
-
     # Public: Kicks off the CLI
     #
     # Examples
@@ -202,7 +189,21 @@ module Ldgr
       end
     end
 
-    # Public: Opens a settings file from ~/.config/ledger
+    private
+    # Private: User-specified config options
+    #
+    # Examples
+    #
+    #   user_config
+    #   # => {all the config options from the user's YAML file}
+    #
+    # Returns a hash of user-specified config options.
+    def user_config
+      path = Pathname(FILEBASE + 'ldgr.yaml')
+      path.exist? ? YAML.load_file(path).to_h : {}
+    end
+
+    # Private: Opens a settings file from ~/.config/ledger
     #
     # Examples
     #
@@ -220,9 +221,7 @@ module Ldgr
       open_file(ARGV[1])
     end
 
-    private :open
-
-    # Public: ldgr's default configuration options
+    # Private: ldgr's default configuration options
     #
     # Examples
     #
@@ -251,6 +250,5 @@ module Ldgr
         FileUtils.touch("#{FILEBASE}#{file}")
       end
     end
-    private :setup
   end
 end
