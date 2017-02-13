@@ -1,21 +1,25 @@
-require 'test_helper'  # ~> LoadError: cannot load such file -- test_helper
+# frozen_string_literal: true
+require 'test_helper'
 require 'yaml'
 require 'tempfile'
+require 'irb'
 
 describe Ldgr::Parser do
   let(:parser) { Ldgr::Parser.new }
-  let(:yaml) { {currency: '$'} } 
+  let(:yaml) { { currency: '$' } }
   let(:ldgr_defaults) { parser.defaults }
   let(:merged_defaults) { ldgr_defaults.merge(yaml) }
   let(:today) { Date.today }
-  let(:non_defaults) { {payee: 'OXO', account: 'Alcohol', amount: '2000', currency: '¥'} }
-  let(:oxo_transaction) {
+  let(:non_defaults) do
+    { payee: 'OXO', account: 'Alcohol', amount: '2000', currency: '¥' }
+  end
+  let(:oxo_transaction) do
     <<~HERE
     #{today} OXO
       Alcohol  ¥2000
       Cash
     HERE
-  }
+  end
 
   it 'can read config files' do
     config_file = Tempfile.new('ldgr.yaml')
@@ -59,10 +63,3 @@ describe Ldgr::Parser do
     expect(add_call).must_raise(RuntimeError)
   end
 end
-
-# ~> LoadError
-# ~> cannot load such file -- test_helper
-# ~>
-# ~> /Users/brandonpittman/.rubies/ruby-2.4.0/lib/ruby/site_ruby/2.4.0/rubygems/core_ext/kernel_require.rb:55:in `require'
-# ~> /Users/brandonpittman/.rubies/ruby-2.4.0/lib/ruby/site_ruby/2.4.0/rubygems/core_ext/kernel_require.rb:55:in `require'
-# ~> /var/folders/q5/p4rpcgvx101ctdyg2xb6wtv40000gn/T/seeing_is_believing_temp_dir20170209-95865-9z8n5b/program.rb:1:in `<main>'

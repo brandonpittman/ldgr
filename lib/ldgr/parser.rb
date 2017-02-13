@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'irb'
 require 'csv'
 require 'date'
@@ -25,7 +26,7 @@ module Ldgr
     PROGRAM_NAME = 'ldgr'
     MATCH = /(?=(\n\d\d\d\d-\d\d-\d\d)(=\d\d\d\d-\d\d-\d\d)*)|\z/
     OTHER_MATCH = /(?=(\d\d\d\d-\d\d-\d\d)(=\d\d\d\d-\d\d-\d\d)*)/
-    COMMANDS = %w(add sort tag clear open)
+    COMMANDS = %w(add sort tag clear open).freeze
 
     attr_accessor :transactions_file, :config
 
@@ -142,7 +143,7 @@ module Ldgr
             question = ask('Do you want to clear this?  ') do |q|
               q.default = 'No'
             end
-            transaction.gsub!(pattern, "#{front} * #{back}") if question =~ /y/i
+            transaction.gsub!(pattern, "#{front} * #{back}") if question.match?(/y/i)
           end
           output << transaction
         end
@@ -212,7 +213,7 @@ module Ldgr
     def open
       def open_file(file_to_open)
         checked_file = "#{FILEBASE}#{file_to_open}.dat"
-        raise "#{checked_file} doesn't exist." unless Pathname(checked_file).exist?
+        fail "#{checked_file} doesn't exist." unless Pathname(checked_file).exist?
         system(ENV['EDITOR'], checked_file)
       end
 
