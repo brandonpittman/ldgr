@@ -1,4 +1,4 @@
-# frozen_string_literal: true
+# frozen_string_literal: false
 require 'irb'
 require 'csv'
 require 'date'
@@ -126,7 +126,8 @@ module Ldgr
             count += 1
             front = match[1]
             back = match[4]
-            puts "\n#{HighLine.color(transaction, :magenta)}"
+            puts transaction
+            # puts "\n#{HighLine.color(transaction, :magenta)}"
             question = ask('Do you want to clear this?  ') do |q|
               q.default = 'No'
             end
@@ -156,7 +157,8 @@ module Ldgr
           match = pattern.match(transaction)
           if match
             count += 1
-            puts "\n#{HighLine.color(previous, :blue)} #{HighLine.color(match[2], :red)}"
+            puts "\n#{previous} #{match[2]}"
+            # puts "\n#{HighLine.color(previous, :blue)} #{HighLine.color(match[2], :red)}"
             question = ask('What account does this belong to?  ') { |q| q.default = 'None' }
             transaction.gsub!(match[1], "  #{question.capitalize}  ") if question != 'None'
           end
