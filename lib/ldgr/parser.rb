@@ -8,6 +8,7 @@ require 'pathname'
 require 'strscan'
 require 'fileutils'
 require 'yaml'
+require 'highline/import'
 
 module Ldgr
   # Parses configuration options.
@@ -243,7 +244,7 @@ module Ldgr
     #
     # Returns nothing.
     def setup
-      setup_files = %w(transactions.dat accounts.dat budgets.dat aliases.dat commodities.dat setup.dat ledger.dat ldgr.yaml)
+      setup_files = %w(transactions.dat accounts.dat budgets.dat aliases.dat commodities.dat setup.dat ledger.dat)
       FileUtils.mkdir_p(FILEBASE)
       setup_files.each do |file|
         FileUtils.touch("#{FILEBASE}#{file}")
